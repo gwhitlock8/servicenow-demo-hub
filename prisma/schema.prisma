@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  role      String   @default("editor") // "admin" | "editor"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Demo {
+  id          String    @id @default(cuid())
+  title       String
+  scenario    String    // "itsm" | "csm" | "hrsd" | "itom"
+  customer    String?
+  description String?
+  published   Boolean   @default(false)
+  personas    Persona[]
+  steps       Step[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Persona {
+  id         String  @id @default(cuid())
+  demo       Demo    @relation(fields: [demoId], references: [id], onDelete: Cascade)
+  demoId     String
+  name       String
+  role       String?
+  type       String? // "decision-maker" | "practitioner" | "champion"
+  painPoints String? // JSON array
+  quote      String?
+  order      Int     @default(0)
+}
+
+model Step {
+  id            String @id @default(cuid())
+  demo          Demo   @relation(fields: [demoId], references: [id], onDelete: Cascade)
+  demoId        String
+  order         Int
+  title         String
+  subtitle      String?
+  icon          String?
+  durationMins  Int?
+  actLabel      String?
+  contentBlocks String  @default("[]") // JSON array of block objects
+}
