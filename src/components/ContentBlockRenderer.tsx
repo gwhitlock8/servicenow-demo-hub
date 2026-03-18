@@ -143,16 +143,37 @@ function BlockItem({ block }: { block: ContentBlock }) {
         </div>
       )
 
-    case 'note':
+    case 'note': {
+      // Split content on (1), (2), ... pattern into numbered list items
+      const noteItems: string[] = []
+      let noteIntro = block.content ?? ''
+      if (block.content) {
+        const parts = block.content.split(/\s*\(\d+\)\s*/).filter(Boolean)
+        const hasNumbered = /\(1\)/.test(block.content)
+        if (hasNumbered && parts.length > 1) {
+          noteIntro = parts[0].trim().replace(/:$/, ':')
+          noteItems.push(...parts.slice(1).map(s => s.trim()))
+        }
+      }
       return (
-        <div style={{ padding: '12px 14px', borderRadius: '6px', background: 'rgba(30,45,69,0.4)', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-          <span style={{ fontSize: '14px', color: 'var(--text-muted)', flexShrink: 0, paddingTop: '1px' }}>💡</span>
-          <p style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.5, margin: 0 }}>
-            {block.label && <strong style={{ color: 'var(--text-secondary)' }}>{block.label}: </strong>}
-            {block.content}
-          </p>
+        <div style={{ padding: '14px 16px', borderRadius: '8px', background: 'rgba(30,45,69,0.4)', border: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', marginBottom: noteItems.length ? '10px' : 0 }}>
+            <span style={{ fontSize: '14px', color: 'var(--text-muted)', flexShrink: 0, paddingTop: '1px' }}>💡</span>
+            <p style={{ color: 'var(--text-muted)', fontSize: '13px', lineHeight: 1.5, margin: 0 }}>
+              {block.label && <strong style={{ color: 'var(--text-secondary)' }}>{block.label}: </strong>}
+              {noteItems.length ? noteIntro : block.content}
+            </p>
+          </div>
+          {noteItems.length > 0 && (
+            <ol style={{ margin: 0, padding: '0 0 0 36px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {noteItems.map((item, i) => (
+                <li key={i} style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.5 }}>{item}</li>
+              ))}
+            </ol>
+          )}
         </div>
       )
+    }
 
     case 'caution':
       return (
