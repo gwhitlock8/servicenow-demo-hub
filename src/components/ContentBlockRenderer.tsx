@@ -165,9 +165,9 @@ function BlockItem({ block }: { block: ContentBlock }) {
             </p>
           </div>
           {noteItems.length > 0 && (
-            <ol style={{ margin: 0, padding: '0 0 0 36px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <ol style={{ margin: 0, padding: '0 0 0 36px' }}>
               {noteItems.map((item, i) => (
-                <li key={i} style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.5 }}>{item}</li>
+                <li key={i} style={{ color: 'var(--text-secondary)', fontSize: '13px', lineHeight: 1.5, marginBottom: '6px' }}>{item}</li>
               ))}
             </ol>
           )}
